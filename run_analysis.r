@@ -7,8 +7,8 @@ library(reshape2)
 ## Three -- table linking ids included
 
 ## Training and test set merging
-
 root.dir <- "UCI HAR Dataset"
+
 data.set <- list()
 
 message("loading features.txt")
@@ -30,34 +30,26 @@ data.set$train <- cbind(subject=read.table(paste(root.dir, "train", "subject_tra
 rename.features <- function(col) {
       col <- gsub("tBody", "Time.Body", col)
       col <- gsub("tGravity", "Time.Gravity", col)
-
       col <- gsub("fBody", "FFT.Body", col)
       col <- gsub("fGravity", "FFT.Gravity", col)
-
       col <- gsub("\\-mean\\(\\)\\-", ".Mean.", col)
       col <- gsub("\\-std\\(\\)\\-", ".Std.", col)
-
       col <- gsub("\\-mean\\(\\)", ".Mean", col)
       col <- gsub("\\-std\\(\\)", ".Std", col)
-
     return(col)
 }
 
 ## Mean and standard deviation per measurement
-
 tidy <- rbind(data.set$test, data.set$train)[,c(1, 2, grep("mean\\(|std\\(", data.set$features$name) + 2)]
 
 ## Descriptive activity names
-
 names(tidy) <- c("Subject", "Activity.ID", rename.features(data.set$features$name[grep("mean\\(|std\\(", data.set$features$name)]))
 
 ## Descriptive activity name labeling
-
 tidy <- merge(tidy, data.set$activity_labels, by.x="Activity.ID", by.y="id")
 tidy <- tidy[,!(names(tidy) %in% c("Activity.ID"))]
 
 ## Separate tidy data set with mean of each variable per activity per subject
-
 tidy.mean <- ddply(melt(tidy, id.vars=c("Subject", "Activity")), .(Subject, Activity), summarise, MeanSamples=mean(value))
 
 write.csv(tidy.mean, file = "tidy.mean.txt",row.names = FALSE)
