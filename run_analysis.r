@@ -2,7 +2,7 @@ library(plyr)
 library(reshape2)
 
 ## Objectives
-## One -- one column per variables
+## One -- one column per variable
 ## Two -- one row per observation
 ## Three -- table linking ids included
 
